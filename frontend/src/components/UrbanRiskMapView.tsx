@@ -214,7 +214,8 @@ export const UrbanRiskMapView: React.FC<UrbanRiskMapViewProps> = ({
       </div>
 
       {/* Main Map Viewport */}
-      <div className="relative flex-1 w-full h-full">
+      {/* isolate: contains Leaflet's internal z-indexes (panes/controls go up to 1000) so the slide-out drawer below can paint on top of the map */}
+      <div className="relative isolate flex-1 w-full h-full">
         <MapContainer
           center={[13.0827, 80.2707]}
           zoom={11}
