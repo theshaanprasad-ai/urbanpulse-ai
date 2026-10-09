@@ -32,7 +32,8 @@ export interface AIAssistantResponse {
   suggested_actions: string[];
 }
 
-const BASE_URL = '/api';
+// Dev uses the Vite proxy; a hosted build needs the deployed backend's origin.
+const BASE_URL = `${import.meta.env.VITE_API_BASE_URL ?? ''}/api`;
 
 async function fetchJson<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${BASE_URL}${endpoint}`, {
