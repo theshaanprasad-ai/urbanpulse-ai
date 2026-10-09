@@ -40,6 +40,8 @@ yarn-debug.log*
 yarn-error.log*
 frontend/dist/
 frontend/node_modules/
+!frontend/src/lib/
+!frontend/src/lib/supabase.ts
 
 # Environment and secrets (NEVER COMMIT)
 .env
