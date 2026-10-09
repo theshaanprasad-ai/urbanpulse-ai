@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "cd frontend && npm install && npm run build"
+    "build": "cd frontend && npm install && npm run build && cd .. && mkdir -p dist && cp -R frontend/dist/. dist/"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3"
