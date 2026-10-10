@@ -101,8 +101,8 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="bg-transparent text-white font-medium focus:outline-none cursor-pointer"
             >
               <option value="chennai" className="bg-slate-900">Chennai</option>
-              <option value="bengaluru" className="bg-slate-900">Bengaluru</option>
-              <option value="bhubaneswar" className="bg-slate-900">Bhubaneswar</option>
+              <option disabled className="bg-slate-900">Bengaluru — ward data pending</option>
+              <option disabled className="bg-slate-900">Bhubaneswar — ward data pending</option>
             </select>
           </div>
 

@@ -102,6 +102,10 @@ export const TemporalAnomalyExplorerView: React.FC<TemporalAnomalyExplorerViewPr
     return true;
   });
 
+  const avgCoverage = anomalies.length
+    ? Math.round((anomalies.reduce((sum, item) => sum + item.data_coverage_pct, 0) / anomalies.length) * 10) / 10
+    : 0;
+
   return (
     <div className="space-y-6">
       {/* Header Banner */}
@@ -150,7 +154,7 @@ export const TemporalAnomalyExplorerView: React.FC<TemporalAnomalyExplorerViewPr
           </div>
           <div className="bg-slate-950/60 p-3 rounded-lg border border-slate-800/80">
             <span className="text-[11px] text-slate-400 block">Avg Data Coverage</span>
-            <span className="text-xl font-bold text-cyan-400 font-mono">92.5%</span>
+            <span className="text-xl font-bold text-cyan-400 font-mono">{avgCoverage}%</span>
           </div>
         </div>
       </div>

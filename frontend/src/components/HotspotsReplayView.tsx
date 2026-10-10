@@ -47,7 +47,7 @@ export const HotspotsReplayView: React.FC<HotspotsReplayViewProps> = ({ hotspots
       rainfall: '68.0 mm (3h Burst)',
       status: 'WARNING',
       complaintsCount: 6,
-      hotspotState: 'DBSCAN detects initial clustering at Vyasarpadi Subway (2.5x baseline).',
+      hotspotState: 'Spatial density clustering detects initial clustering at Vyasarpadi Subway (2.5x baseline).',
       riskLevel: 'ELEVATED (Score: 56/100)',
       highlight: 'IMD issues Orange Warning. Water level reaches 25cm in subways.',
     },
@@ -107,7 +107,7 @@ export const HotspotsReplayView: React.FC<HotspotsReplayViewProps> = ({ hotspots
         </div>
 
         <p className="text-xs text-slate-300 mb-5 leading-relaxed">
-          Demonstrates how the early warning pipeline transitions dynamically from early rainfall observations to civic complaint bursts, DBSCAN spatial clustering, and automated risk escalation.
+          Demonstrates how the early warning pipeline transitions dynamically from early rainfall observations to civic complaint bursts, spatial density clustering, and automated risk escalation.
         </p>
 
         {/* Timeline Progress Tracker */}
@@ -220,7 +220,7 @@ export const HotspotsReplayView: React.FC<HotspotsReplayViewProps> = ({ hotspots
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Flame className="w-5 h-5 text-rose-500" />
-            <h3 className="text-base font-bold text-white">Active Spatial Hotspot Clusters (DBSCAN)</h3>
+            <h3 className="text-base font-bold text-white">Active Spatial Hotspot Clusters (Density-Based)</h3>
           </div>
           <span className="text-xs text-slate-400">
             Density Radius: 450 meters • Min Reports: 2

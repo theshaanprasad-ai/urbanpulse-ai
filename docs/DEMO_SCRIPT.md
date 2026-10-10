@@ -46,7 +46,7 @@
 > - *At **T+0**, normal baseline.*
 > - *At **T+3**, rainfall bursts to 28mm; initial scattered reports appear.*
 > - *At **T+6**, rainfall crosses 68mm; IMD issues an Orange Alert.*
-> - *At **T+12**, rainfall hits 118mm. Notice how our **DBSCAN anomaly detector** flags an **Emerging Hotspot** at Velachery Main Road—complaint frequency is **5.0 times higher** than normal dry weather baseline! The system flags this before water overtops the lake bund."*
+> - *At **T+12**, rainfall hits 118mm. Notice how our **spatial density clustering engine** flags an **Emerging Hotspot** at Velachery Main Road—complaint frequency is **5.0 times higher** than normal dry weather baseline! The system flags this before water overtops the lake bund."*
 
 ---
 

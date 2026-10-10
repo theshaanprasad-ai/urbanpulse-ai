@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   AlertTriangle,
   CloudRain,
@@ -28,6 +28,7 @@ import {
   DecisionAction,
   CivicComplaint
 } from '../types';
+import { api } from '../api/client';
 
 interface CommandCenterViewProps {
   analytics: RainfallAnalytics | null;
@@ -52,6 +53,14 @@ export const CommandCenterView: React.FC<CommandCenterViewProps> = ({
   onSelectZone,
   onAcknowledgeAction,
 }) => {
+  const [flaggedAnomalies, setFlaggedAnomalies] = useState<number | null>(null);
+
+  useEffect(() => {
+    api.getTemporalAnomalies()
+      .then((rows) => setFlaggedAnomalies(rows.length))
+      .catch(() => setFlaggedAnomalies(null));
+  }, []);
+
   const severeHazards = complaints.filter(c => c.is_severe_hazard);
   const queueAActions = actions.filter(
     (a) => a.queue_type === 'EMERGING_PATTERN_QUEUE' || (!a.queue_type && a.priority_score < 90)
@@ -153,8 +162,8 @@ export const CommandCenterView: React.FC<CommandCenterViewProps> = ({
           </div>
           <div className="mt-2">
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-amber-400 font-mono">5</span>
-              <span className="text-xs text-slate-400">Active Spikes</span>
+              <span className="text-2xl font-bold text-amber-400 font-mono">{flaggedAnomalies ?? '—'}</span>
+              <span className="text-xs text-slate-400">Flagged Spikes</span>
             </div>
             <p className="text-xs text-slate-300 mt-1">
               Robust MAD Z-score &gt; +3.0σ • Poisson p &lt; 0.01
@@ -259,12 +268,16 @@ export const CommandCenterView: React.FC<CommandCenterViewProps> = ({
                 </div>
                 <span className="text-xs font-semibold text-slate-200 block truncate">{cat.label}</span>
                 <span className="text-[10px] text-slate-500 block mt-0.5">
-                  {count > 3 ? 'Surge Detected' : 'Normal Baseline'}
+                  {count > 3 ? 'Elevated Volume' : 'Baseline Volume'}
                 </span>
               </div>
             );
           })}
         </div>
+
+        <p className="text-[10px] text-slate-500 leading-relaxed">
+          Category volumes above are raw descriptive counts. Statistically tested detections &mdash; FDR-corrected Poisson rate tests against each ward's own baseline &mdash; live in the Temporal Anomaly Engine.
+        </p>
       </div>
 
       {/* 4. Priority Operational Action Tasks Preview */}

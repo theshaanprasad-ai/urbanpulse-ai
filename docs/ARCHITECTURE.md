@@ -22,7 +22,7 @@ flowchart TD
         RainfallEng["Rainfall Analyzer<br/>• Multi-window accumulations<br/>• Antecedent API Index<br/>• IMD Intensity Benchmarks"]
         CivicEng["Civic Intelligence<br/>• Multilingual NLP (En/Ta/Hi/Hinglish)<br/>• Prompt sanitization<br/>• Landmark resolution"]
         DupEng["Duplicate Linker<br/>• Spatiotemporal Haversine<br/>• Token Jaccard similarity"]
-        HotspotEng["Hotspot Anomaly Detector<br/>• DBSCAN clustering<br/>• Dynamic anomaly ratio"]
+        HotspotEng["Hotspot Anomaly Detector<br/>• Fixed-radius density clustering<br/>• Dynamic anomaly ratio"]
         RiskEng["Impact-Risk Engine<br/>• Mode 1 Deterministic Baseline<br/>• Mode 2 Empirical ML Classifier<br/>• What-If Hydrologic Simulator"]
         DecisionEng["Decision Support Engine<br/>• Ranked review queue<br/>• Operator audit logging"]
     end
@@ -86,16 +86,19 @@ Risk is categorized deterministically:
 ---
 
 ### C. Spatiotemporal & Semantic Duplicate Matching Score
-Between complaint $c_1$ and $c_2$:
-$$\text{CompositeMatchScore} = \left(0.45 \cdot S_{\text{dist}} + 0.25 \cdot S_{\text{time}} + 0.30 \cdot S_{\text{text}}\right) \cdot F_{\text{category}}$$
+Between complaint $c_1$ and $c_2$ (constants in `backend/app/engine/duplicate_detector.py`):
+$$\text{CompositeMatchScore} = \left(0.40 \cdot S_{\text{dist}} + 0.20 \cdot S_{\text{time}} + 0.40 \cdot S_{\text{text}}\right) \cdot F_{\text{category}}$$
 
 Where:
-- $S_{\text{dist}} = \max\left(0, 1 - \frac{d_{\text{haversine}}(c_1, c_2)}{400\text{m}}\right)$
-- $S_{\text{time}} = \max\left(0, 1 - \frac{\Delta t}{480\text{min}}\right)$
-- $S_{\text{text}} = \frac{|T(c_1) \cap T(c_2)|}{|T(c_1) \cup T(c_2)|}$ (Token Jaccard coefficient)
-- $F_{\text{category}} = 1.0$ if matching issue categories, $0.5$ if distinct.
+- $S_{\text{dist}} = 1 - \dfrac{d_{\text{haversine}}(c_1, c_2)}{400\text{m}}$, or a fixed $0.30$ when either record has no coordinates and both share a zone (weak location evidence, never invented coordinates)
+- $S_{\text{time}} = 1 - \dfrac{\Delta t}{2880\text{min}}$ (48-hour window)
+- $S_{\text{text}} = \max\left(J_{\text{token}},\ J_{\text{trigram}}\right)$ where $J$ is the Jaccard coefficient over stopword-filtered word tokens and over character trigrams (trigrams survive typos and mixed scripts)
+- $F_{\text{category}} = 1.0$ if matching issue categories, $0.6$ if distinct
 
-Candidate pairs with $\text{Score} \ge 0.65$ are recommended for `CONFIRM_MERGE`.
+Hard gates applied before scoring — a pair failing either scores $0$ and is never surfaced:
+$\Delta t \le 48\text{h}$ and $d \le 400\text{m}$.
+
+Thresholds: $\text{Score} \ge 0.75$ suggests `LIKELY_DUPLICATE`; $\ge 0.60$ suggests `POSSIBLE_DUPLICATE`; below that `DISTINCT`. Suggestions are advisory only — a human operator confirms a merge, which creates a `LinkedIncident` without deleting either record, and a rejection is persisted so the same pair is not re-suggested. The score is a heuristic similarity, not a probability.
 
 ---
 
@@ -105,6 +108,8 @@ $$B = \max\left(0.5, \rho_{\text{baseline}} \cdot \pi \cdot \left(\frac{R}{1000}
 The anomaly ratio is computed as:
 $$\text{AnomalyRatio} = \frac{N_{\text{observed}}}{B}$$
 Clusters with $\text{Ratio} \ge 3.0$ during concurrent precipitation are classified as `EMERGING`.
+
+> Section D describes the legacy density heuristic behind `engine/hotspot_detector.py` (`/hotspots`). The current production engine is `engine/spatiotemporal_engine.py`: greedy fixed-radius clustering at 400 m over a 72 h window with a minimum of 3 reports, tested against the *same location's* 28-day history rather than an areal density expectation, plus 7 km neighbourhood pooling across zone centroids.
 
 ---
 

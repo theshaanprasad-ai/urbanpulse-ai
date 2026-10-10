@@ -166,7 +166,7 @@ export const DataSourcesEvaluationView: React.FC<DataSourcesEvaluationViewProps>
             </p>
           </div>
           <span className="text-xs px-2.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
-            5 Active Ingestion Providers
+            {dataSources.length} Active Ingestion Providers
           </span>
         </div>
 
